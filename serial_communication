@@ -1,0 +1,42 @@
+#Dev by Vitor Nunciatelli - nunciatelli54@gmail.com - 2023
+import serial
+import datetime
+
+# Configurações da porta serial
+#PORTA = "COM3"  # Altere para a porta correta (ex.: "/dev/ttyUSB0" no Linux)
+#BAUDRATE = 115200  # Ajuste para a taxa de baud correta
+
+ARQUIVO_LOG = "log_serial.txt"  # Nome do arquivo para salvar os dados
+
+## Configurações da porta serial com INPUT
+PORTA = 'COM'+input('PORTA COM:')
+BAUDRATE = input('BAUDRATE:')
+print('PORTA:',PORTA, 'BAUDRATE:', BAUDRATE)
+
+try:
+    # Abre a porta serial
+    with serial.Serial(PORTA, BAUDRATE, timeout=1) as ser, open(ARQUIVO_LOG, "a") as log_file:
+        print(f"Escutando {PORTA} na baudrate {BAUDRATE}... Salvando em {ARQUIVO_LOG}\n")
+
+        while True:
+            # Lê os dados da porta serial
+            dados = ser.read(16)  # Lê até 16 bytes por vez
+            
+            if dados:
+                # Converte os dados para hexadecimal
+                hex_output = " ".join(f"{byte:02X}" for byte in dados)
+                
+                # Captura timestamp atual
+                timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+                # Exibe e salva no arquivo
+                log_entry = f"{timestamp} - {hex_output}\n"
+                print(log_entry.strip())  # Mostra no terminal
+                log_file.write(log_entry)  # Salva no arquivo
+                log_file.flush()  # Garante que os dados sejam gravados imediatamente
+
+except serial.SerialException as e:
+    print(f"Erro ao acessar a porta serial: {e}")
+
+except KeyboardInterrupt:
+    print("\nEncerrando leitura da porta serial.")
