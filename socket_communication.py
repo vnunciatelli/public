@@ -1,3 +1,4 @@
+#Dev by Vitor Nunciatelli - nunciatelli54@gmail.com - 2023
 import socket
 
 # Configuração do servidor
